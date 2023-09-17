@@ -2,7 +2,7 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import DeckSwiper from './src/components/deckSwiper/deck-swiper';
+import DeckSwiper from './src/components/deckSwiper/DeckSwiper';
 import { ExploreActiveIcon, ExploreInactiveIcon } from './src/icon/explore-icon';
 import { MapActiveIcon, MapInactiveIcon } from './src/icon/map-icon';
 import { CommunityActiveIcon, CommunityInactiveIcon } from './src/icon/community-icon';

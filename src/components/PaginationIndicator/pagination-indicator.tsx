@@ -12,7 +12,7 @@ const PaginationIndicator = ({ currentIndex, dotAnimation, cards }: IndicatorPro
         <Animated.View
             key={index}
             style={{
-                flex: 1,
+                flex:1,
                 height: 10,
                 borderRadius: 5,
                 backgroundColor: index === currentIndex ? '#33BCA3' : '#ccc',

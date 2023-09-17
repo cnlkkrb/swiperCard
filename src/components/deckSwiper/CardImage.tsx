@@ -1,13 +1,13 @@
 import {View, Text, Dimensions, Image, Animated} from 'react-native';
 import React, {useCallback} from 'react';
-import TinderLike from './TinderLike';
+import TinderLike from './CardText';
 
 const {height, width} = Dimensions.get('window');
 
-const TinderCard = ({item, isFirst, swipe, ...rest}) => {
+const CardImage = ({item, isFirst, swipe, ...rest}: any) => {
   const rotate = swipe.x.interpolate({
     inputRange: [-100, 0, 100],
-    outputRange: ['-8deg', '0deg', '8deg'],
+    outputRange: ['-5deg', '0deg', '5deg'],
   });
   const likeOpacity = swipe.x.interpolate({
     inputRange: [10, 100],
@@ -25,14 +25,14 @@ const TinderCard = ({item, isFirst, swipe, ...rest}) => {
       <>
         <Animated.View
           style={[
-            {position: 'absolute', top: 50, left: 20},
+            {position: 'absolute', top: 30, left: 30},
             {opacity: likeOpacity},
           ]}>
-          <TinderLike type={'Like'} />
+          <TinderLike type={'Yeah'} />
         </Animated.View>
         <Animated.View
           style={[
-            {position: 'absolute', top: 50, right: 20},
+            {position: 'absolute', top: 30, right: 30},
             {opacity: rejectOpacity},
           ]}>
           <TinderLike type={'Nope'} />
@@ -45,12 +45,10 @@ const TinderCard = ({item, isFirst, swipe, ...rest}) => {
       style={[
         {
           width: width - 20,
-          height: height - 200,
+          height: height - 340,
           position: 'absolute',
-          top: 40,
-          justifyContent: 'center',
+          top: 100,
           alignItems: 'center',
-          alignSelf: 'center',
         },
         isFirst && {
           transform: [...swipe.getTranslateTransform(), {rotate: rotate}],
@@ -58,23 +56,16 @@ const TinderCard = ({item, isFirst, swipe, ...rest}) => {
       ]}
       {...rest}>
       <Image
+        resizeMode='cover'
         source={item.image}
-        style={{width: '100%', height: '85%', borderRadius: 20}}
+        style={{width: '100%', height: '100%', borderRadius: 20}}
       />
       {isFirst && renderChoice()}
-
-        <Text
-          style={{
-            position: 'absolute',
-            bottom: 20,
-            left: 30,
-            fontSize: 40,
-            color: '#FFF',
-          }}>
+        <Text>
           {item.title}
         </Text>
     </Animated.View>
   );
 };
 
-export default TinderCard;
+export default CardImage;
