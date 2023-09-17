@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import DeckSwiper from './src/components/deckSwiper/DeckSwiper';
@@ -7,9 +7,14 @@ import { ExploreActiveIcon, ExploreInactiveIcon } from './src/icon/explore-icon'
 import { MapActiveIcon, MapInactiveIcon } from './src/icon/map-icon';
 import { CommunityActiveIcon, CommunityInactiveIcon } from './src/icon/community-icon';
 import { PlansActiveIcon, PlansInactiveIcon } from './src/icon/plans-icon';
-import { Image, View } from 'react-native';
+import { Animated, Easing, Image, SafeAreaView, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Neomorph } from 'react-native-neomorph-shadows';
+import MapScreen from './src/screens/MapScreen/map-screen';
+import { useAtom } from 'jotai';
+import { snapIndexAtom } from './src/utils/atom';
+import * as Animatable from 'react-native-animatable';
+import { useEffect } from 'react';
 
 const TabShadow = () => {
   return (
@@ -42,13 +47,37 @@ const ImageShadow = () => {
 }
 
 const Tab = createBottomTabNavigator();
-const BottomTab = () => (
+const BottomTab = () => {
+
+  const [snapIndex] = useAtom(snapIndexAtom)
+  const [animValue] = React.useState(new Animated.Value(0))
+
+  console.log(snapIndex)
+
+  useEffect(() => {
+    let toValue = 0
+    if (snapIndex === 2) {
+      toValue = 150
+    }
+    Animated.timing(animValue, {
+      toValue,
+      duration: 400,
+      easing: Easing.linear,
+      useNativeDriver: true
+    }).start()
+  }, [snapIndex])
+
+  return(
+  <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
+    <Animatable.View
+      style={{ transform : [{translateY: animValue}], flex: 1 }}
+    >
     <Tab.Navigator
       screenOptions={{
         tabBarShowLabel: false, headerShown: false,
         tabBarStyle: {
-          paddingBottom: 15,
-          height: 75
+          paddingBottom: 0,
+          height: 60
         },
       }}>
       <Tab.Screen
@@ -93,8 +122,8 @@ const BottomTab = () => (
             )
           },
         }}
-        name="SettingsScreen"
-        component={DeckSwiper}
+        name="MapScreen"
+        component={MapScreen}
       />
       <Tab.Screen
         options={{
@@ -171,7 +200,10 @@ const BottomTab = () => (
       />
 
     </Tab.Navigator>
-);
+    </Animatable.View>
+    </SafeAreaView>
+  )
+};
 const Stack = createNativeStackNavigator();
 const NestedDrawerTab = () => (
   <NavigationContainer>
