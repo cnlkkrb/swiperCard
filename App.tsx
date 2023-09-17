@@ -69,17 +69,20 @@ const BottomTab = () => {
 
   return(
   <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-    <Animatable.View
-      style={{ transform : [{translateY: animValue}], flex: 1 }}
+    <Animated.View
+       style={{ transform : [{translateY: 0}], flex: 1}}
     >
     <Tab.Navigator
       screenOptions={{
         tabBarShowLabel: false, headerShown: false,
         tabBarStyle: {
           paddingBottom: 0,
-          height: 60
+          height: 60,
+          position:'absolute',
+          transform : [{translateY: animValue}]
         },
-      }}>
+      }}
+      >
       <Tab.Screen
         options={{
           title: 'Explore',
@@ -102,7 +105,7 @@ const BottomTab = () => {
         }}
         name="LibraryScreen"
         component={DeckSwiper}
-      />
+      />  
       <Tab.Screen
         options={{
           title: 'Map',
@@ -200,7 +203,7 @@ const BottomTab = () => {
       />
 
     </Tab.Navigator>
-    </Animatable.View>
+    </Animated.View>
     </SafeAreaView>
   )
 };

@@ -47,7 +47,7 @@ const CardImage = ({item, isFirst, swipe, ...rest}: any) => {
           width: width - 20,
           height: height - 340,
           position: 'absolute',
-          top: 100,
+          top: 30,
           alignItems: 'center',
         },
         isFirst && {

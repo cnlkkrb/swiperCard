@@ -25,30 +25,44 @@ const TinderSwipeDemo = () => {
     { image: require('../../../src/nature2.jpg') },
     { image: require('../../../src/nature3.jpg') },
   ]);
+
+  const [dataPagi, setDataPagi] = useState([
+    { image: require('../../../src/nature1.jpg') },
+    { image: require('../../../src/nature2.jpg') },
+    { image: require('../../../src/nature3.jpg') },
+    { image: require('../../../src/nature1.jpg') },
+    { image: require('../../../src/nature2.jpg') },
+    { image: require('../../../src/nature3.jpg') },
+  ]);
+
   useEffect(() => {
     if (!data.length) {
-      setData([
+
+      const dataTemp = [
         { image: require('../../../src/nature1.jpg') },
         { image: require('../../../src/nature2.jpg') },
         { image: require('../../../src/nature3.jpg') },
         { image: require('../../../src/nature1.jpg') },
         { image: require('../../../src/nature2.jpg') },
         { image: require('../../../src/nature3.jpg') },
-      ]);
+      ];
+
+      setData(dataTemp);
+      setDataPagi(dataTemp);
     }
-  }, [data]);
+  }, [data]
+  );
 
   const swipe = useRef(new Animated.ValueXY()).current;
   const rotate = useRef(new Animated.Value(0)).current;
   const [removedCards, setRemovedCards] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const dotAnimation = new Animated.Value(currentIndex);
-  const [cardHareket] = useState([]);
-
+  const [cardHareket, setCardHareket] = useState([]);
+  const dotAnimation = new Animated.Value(data.length-dataPagi.length);
   const panResponser = PanResponder.create({
     onMoveShouldSetPanResponder: () => true,
     onPanResponderMove: (_, { dx, dy }) => {
       swipe.setValue({ x: dx, y: dy });
+      //swipe.setValue({ x: dx, y: 0 });
     },
 
     onPanResponderRelease: (_, { dx, dy }) => {
@@ -91,33 +105,39 @@ const TinderSwipeDemo = () => {
         toValue: { x: 0, y: 0 },
         useNativeDriver: true,
         duration: 500,
-      }).start();
+      }).start(() => {
+        console.log('After animation');
+      });
+
       cardHareket.splice(cardHareket.length - 1, 1)
-      const newIndex = (currentIndex - 1 + data.length) % data.length;
-      setCurrentIndex(newIndex);
-      dotAnimation.setValue(newIndex);
     }
+    if (removedCards.length == 0) {
+      setCardHareket([])
+    }
+    dotAnimation.setValue(data.length - dataPagi.length);
   }, [removedCards, setData, swipe]);
 
   const handelSelection = useCallback(
     async (direction: number) => {
       Animated.timing(swipe, {
         toValue: { x: direction * 500, y: 0 },
+        //toValue: { x: 0, y: direction * -500 },
         useNativeDriver: true,
         duration: 500,
       }).start(() => removeCard(direction == -1 ? 0 : 1));
-      setCurrentIndex(currentIndex + 1);
     },
     [() => removeCard(0)],
   );
 
   useEffect(() => {
-    dotAnimation.setValue(currentIndex);
+    dotAnimation.setValue(data.length-dataPagi.length);
     Animated.spring(dotAnimation, {
-      toValue: currentIndex,
+      toValue: data.length-dataPagi.length,
       useNativeDriver: true,
     }).start();
-  }, [currentIndex]);
+
+  }, [data.length-dataPagi.length]);
+
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white', alignItems: 'center' }}>
@@ -125,7 +145,7 @@ const TinderSwipeDemo = () => {
         flexDirection: 'row', justifyContent: 'center',
         alignItems: 'center'
       }}>
-        <PaginationIndicator currentIndex={currentIndex} dotAnimation={dotAnimation} cards={data} />
+        <PaginationIndicator currentIndex={cardHareket.length} dotAnimation={dotAnimation} cards={dataPagi} />
       </View>
       {data
         .map((item, index) => {
@@ -161,7 +181,7 @@ const TinderSwipeDemo = () => {
         />
       </View>
       <TouchableOpacity style={styles.skipButton}>
-          <Text style={{ textAlign: 'center', color: 'black' }}>Skip</Text>
+        <Text style={{ textAlign: 'center', color: 'black' }}>Skip</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -172,13 +192,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'center',
-    bottom: 100,
+    bottom: 160,
     width: '100%',
     height: '100%',
     zIndex: -1,
   },
   skipButton: {
-    bottom: 90,
+    bottom: 150,
   },
 })
 
