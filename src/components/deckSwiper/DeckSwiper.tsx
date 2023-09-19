@@ -17,6 +17,13 @@ import IconButton from '../button/button';
 
 const TinderSwipeDemo = () => {
 
+  const swipe = useRef(new Animated.ValueXY()).current;
+  const rotate = useRef(new Animated.Value(0)).current;
+  const [removedCards, setRemovedCards] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const dotAnimation = new Animated.Value(currentIndex);
+  const [cardHareket] = useState([]);
+
   const [data, setData] = useState([
     { image: require('../../../src/nature1.jpg') },
     { image: require('../../../src/nature2.jpg') },
@@ -36,33 +43,15 @@ const TinderSwipeDemo = () => {
   ]);
 
   useEffect(() => {
-    if (!data.length) {
-
-      const dataTemp = [
-        { image: require('../../../src/nature1.jpg') },
-        { image: require('../../../src/nature2.jpg') },
-        { image: require('../../../src/nature3.jpg') },
-        { image: require('../../../src/nature1.jpg') },
-        { image: require('../../../src/nature2.jpg') },
-        { image: require('../../../src/nature3.jpg') },
-      ];
-
-      setData(dataTemp);
-      setDataPagi(dataTemp);
+    if (currentIndex === dataPagi.length) {
+      console.log("All cards are finished!");
     }
-  }, [data]
-  );
-
-  const swipe = useRef(new Animated.ValueXY()).current;
-  const rotate = useRef(new Animated.Value(0)).current;
-  const [removedCards, setRemovedCards] = useState([]);
-  const [cardHareket, setCardHareket] = useState([]);
-  const dotAnimation = new Animated.Value(data.length-dataPagi.length);
+  }, [currentIndex, data]);
+    
   const panResponser = PanResponder.create({
     onMoveShouldSetPanResponder: () => true,
     onPanResponderMove: (_, { dx, dy }) => {
       swipe.setValue({ x: dx, y: dy });
-      //swipe.setValue({ x: dx, y: 0 });
     },
 
     onPanResponderRelease: (_, { dx, dy }) => {
@@ -74,6 +63,7 @@ const TinderSwipeDemo = () => {
           useNativeDriver: true,
           duration: 500,
         }).start(() => removeCard(direction == -1 ? 0 : 1));
+        console.log(direction === 1 ? "Swiped right" : "Swiped left");
       } else {
         Animated.spring(swipe, {
           toValue: { x: 0, y: 0 },
@@ -105,39 +95,33 @@ const TinderSwipeDemo = () => {
         toValue: { x: 0, y: 0 },
         useNativeDriver: true,
         duration: 500,
-      }).start(() => {
-        console.log('After animation');
-      });
+      }).start();
 
-      cardHareket.splice(cardHareket.length - 1, 1)
+      await cardHareket.splice(cardHareket.length - 1, 1)
+      setCurrentIndex(cardHareket.length);
+      dotAnimation.setValue(cardHareket.length);
     }
-    if (removedCards.length == 0) {
-      setCardHareket([])
-    }
-    dotAnimation.setValue(data.length - dataPagi.length);
   }, [removedCards, setData, swipe]);
 
   const handelSelection = useCallback(
     async (direction: number) => {
       Animated.timing(swipe, {
         toValue: { x: direction * 500, y: 0 },
-        //toValue: { x: 0, y: direction * -500 },
         useNativeDriver: true,
         duration: 500,
       }).start(() => removeCard(direction == -1 ? 0 : 1));
+      setCurrentIndex(currentIndex + 1);
     },
     [() => removeCard(0)],
   );
 
   useEffect(() => {
-    dotAnimation.setValue(data.length-dataPagi.length);
+    dotAnimation.setValue(currentIndex);
     Animated.spring(dotAnimation, {
-      toValue: data.length-dataPagi.length,
+      toValue: currentIndex,
       useNativeDriver: true,
     }).start();
-
-  }, [data.length-dataPagi.length]);
-
+  }, [currentIndex]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white', alignItems: 'center' }}>
@@ -181,7 +165,7 @@ const TinderSwipeDemo = () => {
         />
       </View>
       <TouchableOpacity style={styles.skipButton}>
-        <Text style={{ textAlign: 'center', color: 'black' }}>Skip</Text>
+          <Text style={{ textAlign: 'center', color: 'black' }}>Skip</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -198,7 +182,7 @@ const styles = StyleSheet.create({
     zIndex: -1,
   },
   skipButton: {
-    bottom: 150,
+    bottom: 140,
   },
 })
 
