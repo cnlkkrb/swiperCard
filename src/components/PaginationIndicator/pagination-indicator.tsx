@@ -21,7 +21,7 @@ const PaginationIndicator = ({ currentIndex, dotAnimation, cards }: IndicatorPro
                     {
                         scale: dotAnimation.interpolate({
                             inputRange: [index - 1, index, index + 1],
-                            outputRange: [0.8, 1, 0.8],
+                            outputRange: [1, 1, 1],
                             extrapolate: 'clamp',
                         }),
                     },
