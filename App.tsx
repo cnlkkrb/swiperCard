@@ -15,6 +15,7 @@ import { useAtom } from 'jotai';
 import { snapIndexAtom } from './src/utils/atom';
 import * as Animatable from 'react-native-animatable';
 import { useEffect } from 'react';
+import CommunityScreen from './src/screens/CommunityScreen/community-screen';
 
 const TabShadow = () => {
   return (
@@ -177,7 +178,7 @@ const BottomTab = () => {
           },
         }}
         name="deck"
-        component={DeckSwiper}
+        component={CommunityScreen}
       />
       <Tab.Screen
         options={{
