@@ -1,118 +1,87 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   Animated,
-  ScrollView,
-  Image,
-  Dimensions,
   SafeAreaView,
   StyleSheet
-} from "react-native";
+} from 'react-native';
+
+type TabProps = {
+  tabs: Tab[],
+  activeTab: (tab: Tab) => void,
+  activeColor: string,
+  inactiveColor: string,
+  tabNumber: number,
+  activeBackground: string
+}
+
+type Tab = {
+  id: number;
+  text: string;
+  x: number;
+};
 
 
-const { width } = Dimensions.get("window");
+const TabNavigator = ({ tabs, activeTab, activeColor, inactiveColor, tabNumber, activeBackground }: TabProps) => {
 
-const tabAdeti = 6;
+  const [active, setActive] = useState(0);
+  const [translateX] = useState(new Animated.Value(0));
 
-
-const TabNavigator = () => {
-  const [active, setactive] = useState(0);
-  const [xTabOne, setxTabOne] = useState(0)
-  const [xTabTwo, setxTabTwo] = useState(0)
-  const [xTabThree, setxTabThree] = useState(0);
-  const [xTabFour, setxTabFour] = useState(0)
-  const [xTabFive, setxTabFive] = useState(0)
-  const [xTabsix, setxTabSix] = useState(0)
-  const [translateY, settranslateY] = useState(-1000)
-
-  const translateX = useRef(new Animated.Value(0)).current;
-  const translateXTabOne = useRef(new Animated.Value(0)).current;
-  const translateXTabTwo = useRef(new Animated.Value(width)).current;
-  const translateXTabThree = useRef(new Animated.Value(width)).current;
-  const translateXTabFour = useRef(new Animated.Value(width)).current;
-  const translateXTabFive = useRef(new Animated.Value(width)).current;
-
-
-  useEffect(() => {
-  }, []);
-
-  const handleSlide = (type: number) => {
-    setactive(0)
+  const handleSlide = (index: number) => {
+    setActive(index);
     Animated.spring(translateX, {
-      toValue: type,
-      duration: 100,
-      useNativeDriver: true
+      toValue: tabs[index].x,
+      useNativeDriver: true,
     }).start();
   };
-
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#F4F8FC' }}>
       <View style={styles.container}>
         <View style={{ width: "90%", marginLeft: "auto", marginRight: "auto" }}>
           <View style={styles.tabsContainer}>
-            <Animated.View style={[styles.activeTabIndicator, { transform: [{ translateX }] }]} />
-
-            <TouchableOpacity
-              style={styles.tab}
-              onLayout={(event) => setxTabOne(event.nativeEvent.layout.x)}
-              onPress={() => handleSlide(xTabOne - 2)}
-            >
-              <Text style={active === 0 ? styles.tabText : styles.inactiveTabText}>
-                Tab One
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.tab}
-              onLayout={(event) => setxTabTwo(event.nativeEvent.layout.x)}
-              onPress={() =>handleSlide(xTabTwo)}
-            >
-              <Text style={active === 0 ? styles.tabText : styles.inactiveTabText}>
-                Tab One
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.tab}
-              onLayout={(event) => setxTabThree(event.nativeEvent.layout.x)}
-              onPress={() => handleSlide(xTabThree)}
-            >
-              <Text style={active === 0 ? styles.tabText : styles.inactiveTabText}>
-                Tab One
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.tab}
-              onLayout={(event) => setxTabFour(event.nativeEvent.layout.x)}
-              onPress={() =>handleSlide(xTabFour)}
-            >
-              <Text style={active === 0 ? styles.tabText : styles.inactiveTabText}>
-                Tab One
-              </Text>
-            </TouchableOpacity>
-
-            
+            <Animated.View style={[styles.activeTabIndicator, {
+              transform: [{ translateX }],
+              width: `${(100 / tabNumber)}%`,
+              backgroundColor: activeBackground,
+            }]} />
+            {tabs.map((tab, index: number) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.tab}
+                onLayout={(event) => {
+                  const newTabs = [...tabs];
+                  newTabs[index].x = event.nativeEvent.layout.x;
+                }}
+                onPress={() => {
+                  handleSlide(index)
+                  activeTab(tab)
+                }}
+              >
+                <Text style={active === index ? { color: activeColor } : { color: inactiveColor }}>
+                  {tab.text}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </View>
-
-          <ScrollView>
-            <Animated.View
-              style={[styles.contentContainer, { transform: [{ translateX: translateXTabOne }, { translateY: translateY }] }]}
-              onLayout={(event) => settranslateY(event.nativeEvent.layout.height)}
-            >
-              <Text>Hi, I am a cute cat</Text>
-              <View style={styles.contentText}>
-                {/* Content for Tab One */}
-              </View>
-            </Animated.View>
-          </ScrollView>
+          {/* <View style={styles.contentContainer}>
+            {tabs.map((tab1, index: number) => (
+              <Animated.View
+                key={index}
+              >
+                {active === index && tab1.component}
+              </Animated.View>
+            ))}
+          </View> */}
         </View>
       </View>
     </SafeAreaView>
   );
 };
 
-const styles = {
+const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -133,18 +102,10 @@ const styles = {
   },
   activeTabIndicator: {
     position: "absolute",
-    width: (150/tabAdeti)+'%',
     height: "100%",
     top: 0,
-    left: 0,
-    backgroundColor: "green",
+    left: -1,
     borderRadius: 10,
-  },
-  tabText: {
-    color: "#fff",
-  },
-  inactiveTabText: {
-    color: "#007aff",
   },
   contentContainer: {
     justifyContent: "center",
@@ -153,6 +114,6 @@ const styles = {
   contentText: {
     marginTop: 20,
   },
-};
+});
 
 export default TabNavigator;

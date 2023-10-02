@@ -16,6 +16,8 @@ import { snapIndexAtom } from './src/utils/atom';
 import * as Animatable from 'react-native-animatable';
 import { useEffect } from 'react';
 import CommunityScreen from './src/screens/CommunityScreen/community-screen';
+import TabNavigator from './src/components/TopTabNavigator/top-tab-navigator';
+import PlansScreen from './src/screens/PlansScreen/plans-screen';
 
 const TabShadow = () => {
   return (
@@ -200,7 +202,7 @@ const BottomTab = () => {
           },
         }}
         name="plans"
-        component={DeckSwiper}
+        component={PlansScreen}
       />
 
     </Tab.Navigator>
